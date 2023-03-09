@@ -1,12 +1,12 @@
 package example
 
 import (
-	"errors"
+	ees "errors"
 	"fmt"
 )
 
 func Test() error {
 	fmt.Print("test")
 
-	return errors.New("haha")
+	return ees.New("haha")
 }
