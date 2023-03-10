@@ -10,12 +10,16 @@ import (
 )
 
 func main() {
-	depMap, err := getDependencyMap("example")
+	depMap, err := getDependencyMap("example/uk_hr_integrations")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(depMap)
+	graph := NewGraphFromDependencyMap(depMap)
+
+	if err := graph.Visualize(); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func getDependencyMap(folderName string) (DependencyMap, error) {
@@ -53,7 +57,10 @@ func getDependencyMap(folderName string) (DependencyMap, error) {
 
 		var list []string
 		for _, spec := range file.Imports {
-			list = append(list, spec.Path.Value)
+			val := filter(strings.Trim(spec.Path.Value, `""`))
+			if val != "" {
+				list = append(list, val)
+			}
 		}
 
 		if len(list) > 0 {
@@ -62,4 +69,12 @@ func getDependencyMap(folderName string) (DependencyMap, error) {
 	}
 
 	return result, nil
+}
+
+func filter(input string) string {
+	if !strings.Contains(input, "pentohq") {
+		return ""
+	}
+
+	return input
 }
